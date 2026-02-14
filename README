@@ -1,0 +1,13 @@
+to open virtual enviroment 
+    cd rallyai-backend
+    source venv/bin/activate
+
+to run fastapi backend
+    uvicorn main:app --reload
+
+to access in browser 
+    http://localhost:8000
+    
+to test backend calls easily using fastapi
+    http://localhost:8000/docs
+

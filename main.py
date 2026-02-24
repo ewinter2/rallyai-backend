@@ -86,6 +86,7 @@ SYNONYM_RULES = {
         ],
         "good pass": [
             "nice pass",
+            "pass",
             "solid pass",
             "dime",
             "dime pass",
@@ -99,6 +100,7 @@ SYNONYM_RULES = {
         "pass error": [
             "got aced",
             "missed pass",
+            "passing error",
         ],
         "block": [
             "got a block",

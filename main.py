@@ -24,7 +24,7 @@ class ParsedEvent(BaseModel):
 EVENT_MAP = {
     "kill": ("KILL", "us"),
     "dig": ("DIG", None),
-    "hitting error":("HITTING_ERROR", "them"),
+    "hitting error":("HIT_ERROR", "them"),
     "point us": ("POINT_US", "us"),
     "point them": ("POINT_THEM", "them")
 }

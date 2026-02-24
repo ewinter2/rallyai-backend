@@ -45,118 +45,125 @@ EVENT_MAP = {
 # Explicit synonym rules. Keep this small and intentional; expand from real usage.
 SYNONYM_VERSION = "v1"
 SYNONYM_RULES = {
-    "serve": [
-        "served",
-        "served the ball",
-    ],
-    "ace": [
-        "got an ace",
-        "aced them",
-    ],
-    "serve error": [
-        "service error",
-        "foot fault",
-        "served in the net",
-        "served out",
-        "served long",
-        "serve in the net",
-    ],
-    "hit attempt": [
-        "hit attempt",
-        "attack",
-        "swing",
-        "spike",
-    ],
-    "kill": [
-        "got a kill",
-        "gets a kill",
-        "killed it",
-    ],
-    "hit error":[
-        "hit error",
-        "attack error",
-        "missed hit",
-        "hit in the net",
-        "hit out",
-        "tip error",
-        "tipped it out",
-        "tipped the ball out",
-        "swung out",
-    ],
-    "good pass": [
-        "nice pass",
-        "solid pass",
-        "dime",
-        "dime pass",
-        "perfect pass",
-    ],
-    "bad pass": [
-        "bad pass",
-        "poor pass",
-        "weak pass",
-    ],
-    "pass error": [
-        "got aced",
-        "missed pass",
-    ],
-    "block": [
-        "got a block",
-        "blocked it",
-        "blocked the ball",
-        "solo block",
-    ],
-    "block assist": [
-        "got a block assist",
-    ],
-    "block error": [
-        "missed block",
-        "hit the net",
-        "net violation",
-        "net",
-        "block in the net",
-        "block out",
-    ],
-    "assist": [
-        "got an assist",
-    ],
-    "ball handling error": [
-        "double contact",
-        "lift",
-        "carry",
-        "illegal contact",
-    ],
-    "dig": [
-        "got a dig",
-        "dug it",
-        "dug the ball",
-    ],
-    "dig error": [
-        "missed dig",
-        "missed the dig",
-    ],
-    "point us": [
-        "our point",
-        "we got a point",
-        "point for us",
-        "point to us",
-        "point us",
-        "point for our team",
-    ],
-    "point them": [
-        "their point",
-        "they got a point",
-        "point for them",
-    ],
+    "v1": {
+        "serve": [
+            "served",
+            "served the ball",
+        ],
+        "ace": [
+            "got an ace",
+            "aced them",
+        ],
+        "serve error": [
+            "service error",
+            "foot fault",
+            "served in the net",
+            "served out",
+            "served long",
+            "serve in the net",
+        ],
+        "hit attempt": [
+            "hit attempt",
+            "attack",
+            "swing",
+            "spike",
+        ],
+        "kill": [
+            "got a kill",
+            "gets a kill",
+            "killed it",
+        ],
+        "hit error":[
+            "hit error",
+            "attack error",
+            "missed hit",
+            "hit in the net",
+            "hit out",
+            "tip error",
+            "tipped it out",
+            "tipped the ball out",
+            "swung out",
+        ],
+        "good pass": [
+            "nice pass",
+            "solid pass",
+            "dime",
+            "dime pass",
+            "perfect pass",
+        ],
+        "bad pass": [
+            "bad pass",
+            "poor pass",
+            "weak pass",
+        ],
+        "pass error": [
+            "got aced",
+            "missed pass",
+        ],
+        "block": [
+            "got a block",
+            "blocked it",
+            "blocked the ball",
+            "solo block",
+        ],
+        "block assist": [
+            "got a block assist",
+        ],
+        "block error": [
+            "missed block",
+            "hit the net",
+            "net violation",
+            "net",
+            "block in the net",
+            "block out",
+        ],
+        "assist": [
+            "got an assist",
+        ],
+        "ball handling error": [
+            "double contact",
+            "lift",
+            "carry",
+            "illegal contact",
+        ],
+        "dig": [
+            "got a dig",
+            "dug it",
+            "dug the ball",
+        ],
+        "dig error": [
+            "missed dig",
+            "missed the dig",
+        ],
+        "point us": [
+            "our point",
+            "we got a point",
+            "point for us",
+            "point to us",
+            "point us",
+            "point for our team",
+        ],
+        "point them": [
+            "their point",
+            "they got a point",
+            "point for them",
+        ],
+    }
 }
 
 def normalize_with_synonyms(text: str):
     cleaned = text.strip().lower()
-    rules = SYNONYM_RULES[SYNONYM_VERSION]
+    rules = SYNONYM_RULES.get(SYNONYM_VERSION, {})
 
+    replacements = []
     for canonical, variants in rules.items():
         for variant in variants:
-            pattern = rf"\b{re.escape(variant)}\b"
-            cleaned = re.sub(pattern, canonical, cleaned)
+            replacements.append((variant, canonical))
+
+    # Prefer more specific phrases first so "attack error" beats "attack".
+    for variant, canonical in sorted(replacements, key=lambda item: len(item[0]), reverse=True):
+        pattern = rf"\b{re.escape(variant)}\b"
+        cleaned = re.sub(pattern, canonical, cleaned)
 
     return cleaned
 

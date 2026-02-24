@@ -22,47 +22,131 @@ class ParsedEvent(BaseModel):
 # Parsing rules for events
 
 EVENT_MAP = {
+    "serve": ("SERVE", None),
+    "ace": ("ACE", "us"),
+    "serve error": ("SERVE_ERROR", "them"),
+    "hit attempt": ("HIT_ATTEMPT", None),
     "kill": ("KILL", "us"),
+    "hit error":("HIT_ERROR", "them"),
+    "good pass": ("GOOD_PASS", None),
+    "bad pass": ("BAD_PASS", None),
+    "pass error": ("PASS_ERROR", "them"),
+    "block": ("BLOCK", "us"),
+    "block assist": ("BLOCK_ASSIST", None),
+    "block error": ("BLOCK_ERROR", "them"),
+    "assist": ("ASSIST", None),
+    "ball handling error": ("BALL_HANDLING_ERROR", "them"),
     "dig": ("DIG", None),
-    "hitting error":("HIT_ERROR", "them"),
+    "dig error": ("DIG_ERROR", "them"),
     "point us": ("POINT_US", "us"),
-    "point them": ("POINT_THEM", "them")
+    "point them": ("POINT_THEM", "them"),
 }
 
 # Explicit synonym rules. Keep this small and intentional; expand from real usage.
 SYNONYM_VERSION = "v1"
 SYNONYM_RULES = {
-    "v1": {
-        "kill": [
-            "got a kill",
-            "gets a kill",
-            "killed it",
-        ],
-        "hitting error": [
-            "hit error",
-            "attack error",
-            "missed hit",
-            "hit in the net",
-            "hit out",
-            "tip error",
-            "tipped it out",
-            "tipped the ball out",
-            "swung out",
-        ],
-        "point us": [
-            "our point",
-            "we got a point",
-            "point for us",
-            "point to us",
-            "point us",
-            "point for our team",
-        ],
-        "point them": [
-            "their point",
-            "they got a point",
-            "point for them",
-        ],
-    }
+    "serve": [
+        "served",
+        "served the ball",
+    ],
+    "ace": [
+        "got an ace",
+        "aced them",
+    ],
+    "serve error": [
+        "service error",
+        "foot fault",
+        "served in the net",
+        "served out",
+        "served long",
+        "serve in the net",
+    ],
+    "hit attempt": [
+        "hit attempt",
+        "attack",
+        "swing",
+        "spike",
+    ],
+    "kill": [
+        "got a kill",
+        "gets a kill",
+        "killed it",
+    ],
+    "hit error":[
+        "hit error",
+        "attack error",
+        "missed hit",
+        "hit in the net",
+        "hit out",
+        "tip error",
+        "tipped it out",
+        "tipped the ball out",
+        "swung out",
+    ],
+    "good pass": [
+        "nice pass",
+        "solid pass",
+        "dime",
+        "dime pass",
+        "perfect pass",
+    ],
+    "bad pass": [
+        "bad pass",
+        "poor pass",
+        "weak pass",
+    ],
+    "pass error": [
+        "got aced",
+        "missed pass",
+    ],
+    "block": [
+        "got a block",
+        "blocked it",
+        "blocked the ball",
+        "solo block",
+    ],
+    "block assist": [
+        "got a block assist",
+    ],
+    "block error": [
+        "missed block",
+        "hit the net",
+        "net violation",
+        "net",
+        "block in the net",
+        "block out",
+    ],
+    "assist": [
+        "got an assist",
+    ],
+    "ball handling error": [
+        "double contact",
+        "lift",
+        "carry",
+        "illegal contact",
+    ],
+    "dig": [
+        "got a dig",
+        "dug it",
+        "dug the ball",
+    ],
+    "dig error": [
+        "missed dig",
+        "missed the dig",
+    ],
+    "point us": [
+        "our point",
+        "we got a point",
+        "point for us",
+        "point to us",
+        "point us",
+        "point for our team",
+    ],
+    "point them": [
+        "their point",
+        "they got a point",
+        "point for them",
+    ],
 }
 
 def normalize_with_synonyms(text: str):

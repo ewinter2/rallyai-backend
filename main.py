@@ -29,8 +29,55 @@ EVENT_MAP = {
     "point them": ("POINT_THEM", "them")
 }
 
-def parse_command(text: str, setNumber: int):
+# Explicit synonym rules. Keep this small and intentional; expand from real usage.
+SYNONYM_VERSION = "v1"
+SYNONYM_RULES = {
+    "v1": {
+        "kill": [
+            "got a kill",
+            "gets a kill",
+            "killed it",
+        ],
+        "hitting error": [
+            "hit error",
+            "attack error",
+            "missed hit",
+            "hit in the net",
+            "hit out",
+            "tip error",
+            "tipped it out",
+            "tipped the ball out",
+            "swung out",
+        ],
+        "point us": [
+            "our point",
+            "we got a point",
+            "point for us",
+            "point to us",
+            "point us",
+            "point for our team",
+        ],
+        "point them": [
+            "their point",
+            "they got a point",
+            "point for them",
+        ],
+    }
+}
+
+def normalize_with_synonyms(text: str):
     cleaned = text.strip().lower()
+    rules = SYNONYM_RULES[SYNONYM_VERSION]
+
+    for canonical, variants in rules.items():
+        for variant in variants:
+            pattern = rf"\b{re.escape(variant)}\b"
+            cleaned = re.sub(pattern, canonical, cleaned)
+
+    return cleaned
+
+def parse_command(text: str, setNumber: int):
+    cleaned = normalize_with_synonyms(text)
 
     # handle simple command "point us" or "point them"
     if cleaned in ("point us", "point them"):
@@ -88,4 +135,3 @@ def health():
 @app.post("/parse-text", response_model=ParsedEvent)
 def parse_text(request: ParseTextRequest):
     return parse_command(request.text, request.setNumber)
-

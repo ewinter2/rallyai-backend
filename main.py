@@ -47,20 +47,23 @@ SYNONYM_VERSION = "v1"
 SYNONYM_RULES = {
     "v1": {
         "serve": [
+            "serve",
             "served",
             "served the ball",
         ],
         "ace": [
+            "ace",
             "got an ace",
             "aced them",
         ],
         "serve error": [
+            "serve error",
             "service error",
             "foot fault",
             "served in the net",
             "served out",
             "served long",
-            "serve in the net",
+            "served in the net",
         ],
         "hit attempt": [
             "hit attempt",
@@ -69,6 +72,7 @@ SYNONYM_RULES = {
             "spike",
         ],
         "kill": [
+            "kill",
             "got a kill",
             "gets a kill",
             "killed it",
@@ -85,6 +89,7 @@ SYNONYM_RULES = {
             "swung out",
         ],
         "good pass": [
+            "good pass",
             "nice pass",
             "pass",
             "solid pass",
@@ -98,20 +103,24 @@ SYNONYM_RULES = {
             "weak pass",
         ],
         "pass error": [
+            "pass error",
             "got aced",
             "missed pass",
             "passing error",
         ],
         "block": [
+            "block",
             "got a block",
             "blocked it",
             "blocked the ball",
             "solo block",
         ],
         "block assist": [
+            "block assist",
             "got a block assist",
         ],
         "block error": [
+            "block error",
             "missed block",
             "hit the net",
             "net violation",
@@ -120,24 +129,29 @@ SYNONYM_RULES = {
             "block out",
         ],
         "assist": [
+            "assist",
             "got an assist",
         ],
         "ball handling error": [
+            "ball handling error",
             "double contact",
             "lift",
             "carry",
             "illegal contact",
         ],
         "dig": [
+            "dig",
             "got a dig",
             "dug it",
             "dug the ball",
         ],
         "dig error": [
+            "dig error",
             "missed dig",
             "missed the dig",
         ],
         "point us": [
+            "point us",
             "our point",
             "we got a point",
             "point for us",
@@ -146,6 +160,7 @@ SYNONYM_RULES = {
             "point for our team",
         ],
         "point them": [
+            "point them",
             "their point",
             "they got a point",
             "point for them",

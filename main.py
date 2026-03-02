@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
+from uuid import UUID
 import re
 
 app = FastAPI()
@@ -10,6 +11,8 @@ app = FastAPI()
 class ParseTextRequest(BaseModel):
     text: str
     setNumber: int
+    teamId: Optional[UUID] = None
+    matchId: Optional[UUID] = None
 
 class ParsedEvent(BaseModel):
     setNumber: int
@@ -18,6 +21,9 @@ class ParsedEvent(BaseModel):
     pointAwardedTo: Optional[str] #"us", "them" or None for actions like "DIG" which dont award points
     needsReview: bool
     rawText:str
+    playerId: Optional[UUID] = None
+    teamId: Optional[UUID] = None
+    matchId: Optional[UUID] = None
 
 # Parsing rules for events
 
@@ -185,7 +191,12 @@ def normalize_with_synonyms(text: str):
 
     return cleaned
 
-def parse_command(text: str, setNumber: int):
+def parse_command(
+    text: str,
+    setNumber: int,
+    teamId: Optional[UUID] = None,
+    matchId: Optional[UUID] = None
+):
     cleaned = normalize_with_synonyms(text)
 
     # handle simple command "point us" or "point them"
@@ -197,7 +208,10 @@ def parse_command(text: str, setNumber: int):
             "event": event,
             "pointAwardedTo": awarded,
             "needsReview": False,
-            "rawText": text
+            "rawText": text,
+            "playerId": None,
+            "teamId": teamId,
+            "matchId": matchId,
         }
 
     #extract player number
@@ -219,7 +233,10 @@ def parse_command(text: str, setNumber: int):
             "event": "UNKNOWN",
             "pointAwardedTo": None,
             "needsReview": True,
-            "rawText": text
+            "rawText": text,
+            "playerId": None,
+            "teamId": teamId,
+            "matchId": matchId,
         }
     
     event, awarded = EVENT_MAP[matched]
@@ -229,7 +246,10 @@ def parse_command(text: str, setNumber: int):
         "event": event,
         "pointAwardedTo": awarded,
         "needsReview": False,
-        "rawText": text
+        "rawText": text,
+        "playerId": None,
+        "teamId": teamId,
+        "matchId": matchId,
     }
 
 
@@ -243,4 +263,9 @@ def health():
 
 @app.post("/parse-text", response_model=ParsedEvent)
 def parse_text(request: ParseTextRequest):
-    return parse_command(request.text, request.setNumber)
+    return parse_command(
+        request.text,
+        request.setNumber,
+        request.teamId,
+        request.matchId,
+    )

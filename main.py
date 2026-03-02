@@ -66,6 +66,7 @@ SYNONYM_RULES = {
             "served in the net",
         ],
         "hit attempt": [
+            "hit",
             "hit attempt",
             "attack",
             "swing",

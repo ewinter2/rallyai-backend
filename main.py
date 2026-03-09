@@ -85,6 +85,7 @@ SYNONYM_RULES = {
             "killed it",
         ],
         "hit error":[
+            "hitting error",
             "hit error",
             "attack error",
             "missed hit",

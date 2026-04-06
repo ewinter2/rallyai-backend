@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
+import os
 import re
 
 app = FastAPI()
@@ -257,6 +258,11 @@ def parse_command(
 @app.get("/")
 def root():
     return {"Hello": "World"}
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
 
 @app.get("/health")
 def health():

@@ -249,7 +249,7 @@ def preprocess_number_words(text: str) -> str:
     return t
 
 def normalize_with_synonyms(text: str):
-    cleaned = text.strip().lower()
+    cleaned = preprocess_number_words(text)
     rules = SYNONYM_RULES.get(SYNONYM_VERSION, {})
 
     replacements = []
@@ -272,12 +272,32 @@ def parse_command(
 ):
     cleaned = normalize_with_synonyms(text)
 
-    # handle simple command "point us" or "point them"
-    if cleaned in ("point us", "point them"):
-        event, awarded = EVENT_MAP[cleaned]
+    # handle point events — no player number expected, match anywhere in the string
+    for pt_phrase in ("point us", "point them"):
+        if pt_phrase in cleaned:
+            event, awarded = EVENT_MAP[pt_phrase]
+            return {
+                "setNumber": setNumber,
+                "playerNumber": None,
+                "event": event,
+                "pointAwardedTo": awarded,
+                "needsReview": False,
+                "rawText": text,
+                "playerId": None,
+                "teamId": teamId,
+                "matchId": matchId,
+            }
+
+    # extract all player numbers present in the command
+    all_numbers = re.findall(r"\b(\d{1,2})\b", cleaned)
+    player = int(all_numbers[0]) if all_numbers else None
+
+    # block assist: two players + a block = block assist
+    if len(all_numbers) >= 2 and re.search(r"\bblock\b", cleaned):
+        event, awarded = EVENT_MAP["block assist"]
         return {
             "setNumber": setNumber,
-            "playerNumber": None,
+            "playerNumber": player,
             "event": event,
             "pointAwardedTo": awarded,
             "needsReview": False,
@@ -287,15 +307,13 @@ def parse_command(
             "matchId": matchId,
         }
 
-    #extract player number
-    m = re.search(r"\b(\d{1,2})\b", cleaned)
-    player = int(m.group(1)) if m else None
-
-    #find best matching event phrase 
+    # find best matching event phrase using word boundaries to avoid partial matches
     matched = None
 
     for phrase in sorted(EVENT_MAP.keys(), key=len, reverse=True):
-        if phrase in cleaned and phrase not in ("point us", "point them"):
+        if phrase in ("point us", "point them"):
+            continue
+        if re.search(rf"\b{re.escape(phrase)}\b", cleaned):
             matched = phrase
             break
 

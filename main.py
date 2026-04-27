@@ -87,6 +87,7 @@ SYNONYM_RULES = {
             "attack",
             "swing",
             "spike",
+            "attempt",
         ],
         "kill": [
             "kill",
@@ -252,15 +253,21 @@ def normalize_with_synonyms(text: str):
     cleaned = preprocess_number_words(text)
     rules = SYNONYM_RULES.get(SYNONYM_VERSION, {})
 
-    replacements = []
+    # Build a variant→canonical lookup
+    variant_map = {}
     for canonical, variants in rules.items():
         for variant in variants:
-            replacements.append((variant, canonical))
+            variant_map[variant] = canonical
 
-    # Prefer more specific phrases first so "attack error" beats "attack".
-    for variant, canonical in sorted(replacements, key=lambda item: len(item[0]), reverse=True):
-        pattern = rf"\b{re.escape(variant)}\b"
-        cleaned = re.sub(pattern, canonical, cleaned)
+    if not variant_map:
+        return cleaned
+
+    # Single-pass replacement: build one regex alternating all variants longest-first.
+    # This prevents a later short variant (e.g. "hit") from re-matching inside the
+    # canonical form of an earlier longer match (e.g. "hit error" → "hit attempt error").
+    sorted_variants = sorted(variant_map.keys(), key=len, reverse=True)
+    pattern = r'\b(' + '|'.join(re.escape(v) for v in sorted_variants) + r')\b'
+    cleaned = re.sub(pattern, lambda m: variant_map[m.group(0)], cleaned)
 
     return cleaned
 
